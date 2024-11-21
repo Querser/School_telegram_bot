@@ -36,65 +36,15 @@ def updateIdInDb(name_db):
     closeConnectionToDataBase(conn, cursor)
 
 
-# Создание таблиц в базе данных schoolTelegramBot.db.
-# conn, cursor = connectToDataBase()
-#
-# cursor.execute('CREATE TABLE students(id INTEGER PRIMARY KEY, class VARCHAR(30));')
-#
-# cursor.execute('CREATE TABLE day_of_the_week(id INTEGER PRIMARY KEY, name_day VARCHAR(15));')
-#
-# cursor.execute('CREATE TABLE lesson_schedule (id INTEGER PRIMARY KEY, class SMALLINT, week_day SMALLINT, lesson TEXT,'
-#                'FOREIGN KEY(class) REFERENCES students(id), FOREIGN KEY(week_day) REFERENCES day_of_the_week(id));')
-#
-# cursor.execute('CREATE TABLE breakfast (id INTEGER PRIMARY KEY, class TEXT, week_day SMALLINT, dish TEXT,'
-#                ' FOREIGN KEY(class) REFERENCES students(id), FOREIGN KEY(week_day) REFERENCES day_of_the_week(id));')
-#
-# cursor.execute('CREATE TABLE lunch (id INTEGER PRIMARY KEY, class TEXT, week_day SMALLINT, dish TEXT,'
-#                'FOREIGN KEY(class) REFERENCES students(id), FOREIGN KEY(week_day) REFERENCES day_of_the_week(id));')
-#
-# cursor.execute('CREATE TABLE superuser (id INTEGER PRIMARY KEY, superuser_name VARCHAR(50));')
-#
-# cursor.execute('INSERT INTO day_of_the_week(name_day) VALUES("Понедельник");')
-# cursor.execute('INSERT INTO day_of_the_week(name_day) VALUES("Вторник");')
-# cursor.execute('INSERT INTO day_of_the_week(name_day) VALUES("Среда");')
-# cursor.execute('INSERT INTO day_of_the_week(name_day) VALUES("Четверг");')
-# cursor.execute('INSERT INTO day_of_the_week(name_day) VALUES("Пятница");')
-# cursor.execute('INSERT INTO day_of_the_week(name_day) VALUES("Суббота");')
-# cursor.execute('INSERT INTO day_of_the_week(name_day) VALUES("Воскресенье");')
-# conn.commit()
-# closeConnectionToDataBase(conn, cursor)
-#
-def lololo():
-    conn, cursor = connectToDataBase()
-    cursor.execute('SELECT * FROM students;')
-    lol = cursor.fetchall()
-    cursor.execute('SELECT * FROM lesson_schedule;')
-    lol1 = cursor.fetchall()
-    cursor.execute('SELECT * FROM breakfast;')
-    lol2 = cursor.fetchall()
-    cursor.execute('SELECT * FROM lunch;')
-    lo3 = cursor.fetchall()
-    cursor.execute('SELECT * FROM day_of_the_week;')
-    lol4 = cursor.fetchall()
-    cursor.execute('SELECT * FROM superuser;')
-    lol5 = cursor.fetchall()
-    print(lol, lol1, lol2, lo3, lol4, lol5)
-
-# lololo()
-
-
 def adminstart(message):
     '''Администрирование бота.'''
     try:
         markup = telebot.types.InlineKeyboardMarkup()
 
         button_admin_1 = telebot.types.InlineKeyboardButton('Посмотреть расписание урока', callback_data='See_class_schedule')
-        # button_admin_2 = telebot.types.InlineKeyboardButton('Посмотреть меню завтрака', callback_data='See_breakfast_menu')
-        # button_admin_3 = telebot.types.InlineKeyboardButton('Посмотреть меню обеда', callback_data='See_lunch_menu')
         button_admin_4 = telebot.types.InlineKeyboardButton('Администрировать', callback_data='Administer')
 
         markup.row(button_admin_1)
-        # markup.row(button_admin_2, button_admin_3)
         markup.row(button_admin_4)
 
         bot.send_message(message.chat.id, 'Приветствую! Вы администратор. И вот что мы можете:', reply_markup=markup)
@@ -109,11 +59,8 @@ def startmenu(message):
         markup = telebot.types.InlineKeyboardMarkup()
 
         button_admin_1 = telebot.types.InlineKeyboardButton('Посмотреть расписание урока', callback_data='See_class_schedule')
-        # button_admin_2 = telebot.types.InlineKeyboardButton('Посмотреть меню завтрака', callback_data='See_breakfast_menu')
-        # button_admin_3 = telebot.types.InlineKeyboardButton('Посмотреть меню обеда', callback_data='See_lunch_menu')
 
         markup.row(button_admin_1)
-        # markup.row(button_admin_2, button_admin_3)
 
         bot.send_message(message.chat.id, 'Приветствую! Вы администратор. И вот что мы можете:', reply_markup=markup)
     except Exception as e:
@@ -130,15 +77,11 @@ def administer(call):
         markup = telebot.types.InlineKeyboardMarkup()
 
         button_admin_1 = telebot.types.InlineKeyboardButton('Администрировать расписание уроков', callback_data='Administer_class_schedule')
-        # button_admin_2 = telebot.types.InlineKeyboardButton('Администрировать меню завтраков', callback_data='Administer_breakfast_menu')
-        # button_admin_3 = telebot.types.InlineKeyboardButton('Администрировать меню обедов', callback_data='Administer_lunch_menu')
         button_admin_4 = telebot.types.InlineKeyboardButton('Администрировать Классы', callback_data='Administer_class')
         button_admin_5 = telebot.types.InlineKeyboardButton('Админская панель', callback_data='Admin_add_del')
         button_back = telebot.types.InlineKeyboardButton('Назад', callback_data='Back')
 
         markup.row(button_admin_1)
-        # markup.row(button_admin_2)
-        # markup.row(button_admin_3)
         markup.row(button_admin_4)
         markup.row(button_admin_5)
         markup.row(button_back)
@@ -496,309 +439,6 @@ def deleteSchedule(message):
         markup.row(button)
 
         bot.send_message(message.chat.id, f"Рассписание на {split_class_week_day_message[1]}"
-                                          f" для {split_class_week_day_message[0]} успешно удалено!",
-                         reply_markup=markup)
-
-        closeConnectionToDataBase(conn, cursor)
-    except Exception as e:
-        bot.send_message(message.chat.id, f"Попробуйте еще раз! Произошла ошибка! Пожалуйста следуйте инструкции!")
-        return start(message)
-
-@bot.callback_query_handler(func=lambda call: call.data == 'Administer_breakfast_menu')
-def administerBreakfastMenu(call):
-    '''Управление меню завтрака.'''
-    try:
-        bot.delete_message(call.message.chat.id, call.message.message_id)
-
-        markup = telebot.types.InlineKeyboardMarkup()
-
-        button_admin_1 = telebot.types.InlineKeyboardButton('Добавить меню завтрака', callback_data='Add_breakfast_menu')
-        button_admin_2 = telebot.types.InlineKeyboardButton('Удалить меню завтрака', callback_data='Remove_breakfast_menu')
-        button_back = telebot.types.InlineKeyboardButton('Назад', callback_data='Back')
-
-        markup.row(button_admin_1)
-        markup.row(button_admin_2)
-        markup.row(button_back)
-
-        bot.send_message(call.message.chat.id, 'Выберите:', reply_markup=markup)
-    except Exception as e:
-        bot.send_message(call.message.chat.id, f"Попробуйте еще раз! Произошла ошибка! Пожалуйста следуйте инструкции!")
-        return start(call.message)
-
-
-@bot.callback_query_handler(func=lambda call: call.data == 'Add_breakfast_menu')
-def addBreakfastCI(call):
-    '''Сбор данных о классе и дне недели.'''
-    try:
-
-        markup = telebot.types.InlineKeyboardMarkup()
-        button = telebot.types.InlineKeyboardButton('Назад', callback_data='Back')
-        markup.row(button)
-
-        bot.send_message(call.message.chat.id, 'Введите класс и день недели через запятые. Пример:\n 9Г, Понедельник',
-                         reply_markup=markup)
-        bot.register_next_step_handler(call.message, addbreakfastCIL)
-    except Exception as e:
-        bot.send_message(call.message.chat.id, f"Попробуйте еще раз! Произошла ошибка! Пожалуйста следуйте инструкции!")
-        return start(call.message)
-
-global class_week_day_breakfast
-
-def addbreakfastCIL(message):
-    '''Сбор данных о завтраке.'''
-    try:
-        global class_week_day_breakfast
-        class_week_day_breakfast = message.text
-
-        markup = telebot.types.InlineKeyboardMarkup()
-        button = telebot.types.InlineKeyboardButton('Назад', callback_data='Back')
-        markup.row(button)
-
-        bot.send_message(message.chat.id, 'Введите названия блюда через запятые. Пример:\n Овсянка',
-                         reply_markup=markup)
-        bot.register_next_step_handler(message, addBreakfast)
-    except Exception as e:
-        bot.send_message(message.chat.id, f"Попробуйте еще раз! Произошла ошибка! Пожалуйста следуйте инструкции!")
-        return start(message)
-
-
-def addBreakfast(message):
-    '''Добавление меню завтрака'''
-    try:
-        message_breakfast = message.text
-        split_message_breakfast = message_breakfast.split(',')
-
-        global class_week_day_breakfast
-
-        split_message_class_week_day = class_week_day_breakfast.split(',')
-        format_split_message_class_week_day = split_message_class_week_day[1].strip().capitalize()
-
-        conn, cursor = connectToDataBase()
-
-        cursor.execute('SELECT id FROM students WHERE class = ?;', (split_message_class_week_day[0],))
-        id_class = cursor.fetchone()
-
-        cursor.execute('SELECT id FROM day_of_the_week WHERE name_day = ?;', (format_split_message_class_week_day,))
-        id_week_day = cursor.fetchone()
-
-        for breakfast in split_message_breakfast:
-            format_split_message_breakfast = breakfast.strip().capitalize()
-            cursor.execute('INSERT INTO breakfast(class, week_day, dish) VALUES(?, ?, ?);',
-                           (id_class[0], id_week_day[0], format_split_message_breakfast))
-
-        cursor.execute('SELECT dish FROM breakfast WHERE class = ? AND week_day = ?;',
-                       (id_class[0], id_week_day[0]))
-        breakfast_menu = cursor.fetchall()
-
-        markup = telebot.types.InlineKeyboardMarkup()
-        button = telebot.types.InlineKeyboardButton('Назад',
-                                                    callback_data='Back')
-        markup.row(button)
-
-        formatted_breakfast = ', '.join([lesson[0] for lesson in breakfast_menu])
-
-        bot.send_message(message.chat.id, f"{split_message_class_week_day[0]} - {format_split_message_class_week_day}. Завтрак: {formatted_breakfast}",
-                                                    reply_markup=markup)
-        conn.commit()
-        closeConnectionToDataBase(conn, cursor)
-    except Exception as e:
-        bot.send_message(message.chat.id, f"Попробуйте еще раз! Произошла ошибка! Пожалуйста следуйте инструкции!")
-        return start(message)
-
-
-@bot.callback_query_handler(func=lambda call: call.data == 'Remove_breakfast_menu')
-def deleteBreakfastCI(call):
-    '''Сбор данных о классе и дне недели.'''
-    try:
-
-        markup = telebot.types.InlineKeyboardMarkup()
-        button = telebot.types.InlineKeyboardButton('Назад', callback_data='Back')
-        markup.row(button)
-
-        bot.send_message(call.message.chat.id, 'Введите класс и день недели через запятые. Пример:\n 9Г, Понедельник',
-                         reply_markup=markup)
-        bot.register_next_step_handler(call.message, deleteBreakfast)
-    except Exception as e:
-        bot.send_message(call.message.chat.id, f"Попробуйте еще раз! Произошла ошибка! Пожалуйста следуйте инструкции!")
-        return start(call.message)
-
-
-def deleteBreakfast(message):
-    '''Удаление меню завтрака.'''
-    try:
-        conn, cursor = connectToDataBase()
-
-        class_week_day_message = message.text
-        split_class_week_day_message = class_week_day_message.split(',')
-        week_day = split_class_week_day_message[1].strip().capitalize()
-
-        cursor.execute('SELECT id FROM students WHERE class = ?;', (split_class_week_day_message[0],))
-        id_class = cursor.fetchone()
-
-        cursor.execute('SELECT id FROM day_of_the_week WHERE name_day = ?;', (week_day,))
-        id_week_day = cursor.fetchone()
-
-        cursor.execute('DELETE FROM Breakfast WHERE class = ? AND week_day = ?;', (id_class[0], id_week_day[0]))
-
-        conn.commit()
-
-        markup = telebot.types.InlineKeyboardMarkup()
-        button = telebot.types.InlineKeyboardButton('Назад', callback_data='Back')
-        markup.row(button)
-
-        bot.send_message(message.chat.id, f"Меню завтрака на {split_class_week_day_message[1]}"
-                                          f" для {split_class_week_day_message[0]} успешно удалено!",
-                         reply_markup=markup)
-
-        closeConnectionToDataBase(conn, cursor)
-    except Exception as e:
-        bot.send_message(message.chat.id, f"Попробуйте еще раз! Произошла ошибка! Пожалуйста следуйте инструкции!")
-        return start(message)
-
-
-@bot.callback_query_handler(func=lambda call: call.data == 'Administer_lunch_menu')
-def administerLunchMenu(call):
-    '''Управление меню обеда.'''
-    try:
-        bot.delete_message(call.message.chat.id, call.message.message_id)
-
-        markup = telebot.types.InlineKeyboardMarkup()
-
-        button_admin_1 = telebot.types.InlineKeyboardButton('Добавить меню обеда', callback_data='Add_lunch_menu')
-        button_admin_2 = telebot.types.InlineKeyboardButton('Удалить меню обеда', callback_data='Remove_lunch_menu')
-        button_back = telebot.types.InlineKeyboardButton('Назад', callback_data='Back')
-
-        markup.row(button_admin_1)
-        markup.row(button_admin_2)
-        markup.row(button_back)
-
-        bot.send_message(call.message.chat.id, 'Выберите:', reply_markup=markup)
-    except Exception as e:
-        bot.send_message(call.message.chat.id, f"Попробуйте еще раз! Произошла ошибка! Пожалуйста следуйте инструкции!")
-        return start(call.message)
-
-
-@bot.callback_query_handler(func=lambda call: call.data == 'Add_lunch_menu')
-def addlunchCI(call):
-    '''Сбор данных о классе и дне недели.'''
-    try:
-
-        markup = telebot.types.InlineKeyboardMarkup()
-        button = telebot.types.InlineKeyboardButton('Назад', callback_data='Back')
-        markup.row(button)
-
-        bot.send_message(call.message.chat.id, 'Введите класс и день недели через запятые. Пример:\n 9Г, Понедельник',
-                         reply_markup=markup)
-        bot.register_next_step_handler(call.message, addlunchCIL)
-    except Exception as e:
-        bot.send_message(call.message.chat.id, f"Попробуйте еще раз! Произошла ошибка! Пожалуйста следуйте инструкции!")
-        return start(call.message)
-
-global class_week_day_lunch
-
-def addlunchCIL(message):
-    '''Сбор данных меню обеда.'''
-    try:
-        global class_week_day_lunch
-        class_week_day_lunch = message.text
-
-        markup = telebot.types.InlineKeyboardMarkup()
-        button = telebot.types.InlineKeyboardButton('Назад', callback_data='Back')
-        markup.row(button)
-
-        bot.send_message(message.chat.id, 'Введите названия блюда через запятые. Пример:\n Овощное рагу',
-                         reply_markup=markup)
-        bot.register_next_step_handler(message, addlunch)
-    except Exception as e:
-        bot.send_message(message.chat.id, f"Попробуйте еще раз! Произошла ошибка! Пожалуйста следуйте инструкции!")
-        return start(message)
-
-
-def addlunch(message):
-    '''Добавление обедаю'''
-    try:
-        message_lunch = message.text
-        split_message_lunch= message_lunch.split(',')
-
-        global class_week_day_lunch
-
-        split_message_class_week_day = class_week_day_lunch.split(',')
-        format_split_message_class_week_day = split_message_class_week_day[1].strip().capitalize()
-
-        conn, cursor = connectToDataBase()
-
-        cursor.execute('SELECT id FROM students WHERE class = ?;', (split_message_class_week_day[0],))
-        id_class = cursor.fetchone()
-
-        cursor.execute('SELECT id FROM day_of_the_week WHERE name_day = ?;', (format_split_message_class_week_day,))
-        id_week_day = cursor.fetchone()
-
-        for lunch in split_message_lunch:
-            format_split_message_lunch = lunch.strip().capitalize()
-            cursor.execute('INSERT INTO breakfast(class, week_day, dish) VALUES(?, ?, ?);',
-                           (id_class[0], id_week_day[0], format_split_message_lunch))
-
-        cursor.execute('SELECT dish FROM breakfast WHERE class = ? AND week_day = ?;',
-                       (id_class[0], id_week_day[0]))
-        lunch_menu = cursor.fetchall()
-
-        markup = telebot.types.InlineKeyboardMarkup()
-        button = telebot.types.InlineKeyboardButton('Назад',
-                                                    callback_data='Back')
-        markup.row(button)
-
-        formatted_lunch = ', '.join([lesson[0] for lesson in lunch_menu])
-
-        bot.send_message(message.chat.id, f"{split_message_class_week_day[0]} - {format_split_message_class_week_day}. На обед: {formatted_lunch}",
-                                                    reply_markup=markup)
-        conn.commit()
-        closeConnectionToDataBase(conn, cursor)
-    except Exception as e:
-        bot.send_message(message.chat.id, f"Попробуйте еще раз! Произошла ошибка! Пожалуйста следуйте инструкции!")
-        return start(message)
-
-
-@bot.callback_query_handler(func=lambda call: call.data == 'Remove_lunch_menu')
-def deletelunchCI(call):
-    '''Сбор данных о классе и дне недели.'''
-    try:
-
-        markup = telebot.types.InlineKeyboardMarkup()
-        button = telebot.types.InlineKeyboardButton('Назад', callback_data='Back')
-        markup.row(button)
-
-        bot.send_message(call.message.chat.id, 'Введите класс и день недели через запятые. Пример:\n 9Г, Понедельник',
-                         reply_markup=markup)
-        bot.register_next_step_handler(call.message, deletelunch)
-    except Exception as e:
-        bot.send_message(call.message.chat.id, f"Попробуйте еще раз! Произошла ошибка! Пожалуйста следуйте инструкции!")
-        return start(call.message)
-
-
-def deletelunch(message):
-    '''Удаление меню обеда.'''
-    try:
-        conn, cursor = connectToDataBase()
-
-        class_week_day_message = message.text
-        split_class_week_day_message = class_week_day_message.split(',')
-        week_day = split_class_week_day_message[1].strip().capitalize()
-
-        cursor.execute('SELECT id FROM students WHERE class = ?;', (split_class_week_day_message[0],))
-        id_class = cursor.fetchone()
-
-        cursor.execute('SELECT id FROM day_of_the_week WHERE name_day = ?;', (week_day,))
-        id_week_day = cursor.fetchone()
-
-        cursor.execute('DELETE FROM Breakfast WHERE class = ? AND week_day = ?;', (id_class[0], id_week_day[0]))
-
-        conn.commit()
-
-        markup = telebot.types.InlineKeyboardMarkup()
-        button = telebot.types.InlineKeyboardButton('Назад', callback_data='Back')
-        markup.row(button)
-
-        bot.send_message(message.chat.id, f"Меню обеда на {split_class_week_day_message[1]}"
                                           f" для {split_class_week_day_message[0]} успешно удалено!",
                          reply_markup=markup)
 
